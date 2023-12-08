@@ -92,8 +92,8 @@ for(let i=0; i<thedocument.Chunks.length; i++){
 //sort to get the highest three chunks similarity 
 similarityResults.sort((a, b) => b.similarity - a.similarity);
 //get these three chunks from the array
-const contextsTopSimilartyChunks = similarityResults.slice(0, 3).map((result) => result.chunk);
-
+let contextsTopSimilartyChunks = similarityResults.slice(0, 3).map((result) => result.chunk);
+contextsTopSimilartyChunks = contextsTopSimilartyChunks.map(chunk=>chunk.rawText)
 
 
 
@@ -125,7 +125,7 @@ const contextsTopSimilartyChunks = similarityResults.slice(0, 3).map((result) =>
   })
   console.log('--completion--', response);
   // 11. return the response
-  res.status(200).json({ response : response });
+  res.status(200).json({ response : response,topchunks: contextsTopSimilartyChunks});
   } catch (error) {
     res.json({error:error.message})
   }

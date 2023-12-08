@@ -3,6 +3,7 @@ const Doc = require('../models/document');
 const slugify = require('slugify');
 const {uploadFile} = require('../services/aws');
 const {deleteFile}  = require('../services/aws');
+const chatmodel = require('../models/Chat');
 
 
  
@@ -47,49 +48,7 @@ exports.handler = async (req, res) => {
       // Check if the necessary file properties are available
       // 4. upload the file to s3
       const dataLocation = await uploadFile(file.originalname, file.buffer, file.mimetype)
-      
-    
-
-
-
-
-     //////////////////////////// PINECONE ////////////////////////////
-
-
-    //   // 5. initialize pinecone // initialize pinecone name index
-    //   const filenameWithoutSpecial = file.originalname.split('.')[0];
-    //   const filenameSlug = slugify(filenameWithoutSpecial, {
-    //       lower: true,
-    //       strict: true,
-    //   });
-     
-    //   const pinecone = new Pinecone({
-    //     environment: process.env.PDB_ENV,
-    //     apiKey: process.env.PDB_KEY,
-    // })
-
-     // 6. create a pinecone index and check if it exists
-
-
-    //   const indexes = await pinecone.listIndexes()
-
-    //   if (!indexes.includes(filenameSlug)) {
-    //       await pinecone.createIndex({
-    //             name: filenameSlug,
-    //             dimension: 768,
-    //             metric: 'cosine',
-      
-    //       });
-    //       console.log('index created');
-    //   } else {
-    //       throw new Error(`Index with name ${filenameSlug} already exists`);
-    //   }
-
-    //////////////////////////////////////////////////////
-
-
-
-
+        
       // 7. save file info to the mongodb db
 
       const myFile = new Doc({
@@ -98,15 +57,26 @@ exports.handler = async (req, res) => {
       });
 
       await myFile.save()
-      .then(() => {console.log("file info successfully saved in mongo db")})
+      .then(() => {
+        console.log("file info successfully saved in mongo db")
+        const chat = new chatmodel({
+            documentId: myFile._id,
+            chatName: slugify(file.originalname)
+        }) 
+        chat.save().then(() => {
+            console.log("chat info successfully saved in mongo db")
+            return res.status(200).json({
+                message: 'File uploaded to S3 and MongoDB successfully',
+                chatId: chat._id
+            });
+        }).catch(err => {console.log("error saving chat");});
+    })
       .catch((err) => {console.log("file faild to save on mongo db" ,err)});
       // await disconnectDB()
 
 
       // 8. return the success response
-      return res.status(200).json({
-          message: 'File uploaded to S3 and MongoDB successfully',
-      });
+      
       };
 
   } catch (e) {

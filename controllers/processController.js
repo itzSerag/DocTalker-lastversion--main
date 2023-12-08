@@ -1,5 +1,6 @@
 const pdfParse = require('pdf-parse');
 const DocumentModel = require('../models/document');
+const chatmodel = require('../models/Chat');
 const { connectDB } = require('../config/database');
 const {convertDocToChunks} = require('../utils/extractDataFromDocs');
 const { getEmbeddings } = require('../services/huggingface');
@@ -25,8 +26,9 @@ exports.handler = async (req, res) => {
     // 3. query the file by id
     // TODO : PASS THE CHAT ID 
     const { id } = req.body;
-    const myFile = await DocumentModel.findById(id);
-
+    const chat = await chatmodel.findById(id);
+    const myFile = await DocumentModel.findById(chat.documentId);
+    
     if (!myFile) {
       return res.status(400).json({ message: 'file not found' });
     }
@@ -41,7 +43,7 @@ exports.handler = async (req, res) => {
     // Chunk the text using RecursiveCharacterTextSplitter
 
     const chunks = await convertDocToChunks(myFile.FileName, myFile.FileUrl);
-    console.log(chunks);
+    
 
     // ADD THE CHUNKS TO THE DATABASE WITH THE EMBEDDINGS
     const vectors = [];
