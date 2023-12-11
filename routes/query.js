@@ -1,6 +1,6 @@
 const express = require('express');
 const queryController = require('../controllers/queryController');  // Update the path
-
+const { auth } = require('../middlewares/auth');
 const router = express.Router();
 
 

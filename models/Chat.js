@@ -16,7 +16,8 @@ const chatSchema = new mongoose.Schema({
     messages: [
         {   
            role: {type:String,enum:['user','assistant'],default:'user'},
-           content: String
+           content: String,
+      
             
         }
     ],

@@ -36,7 +36,7 @@ exports.handler = async (req, res) => {
   
   chathistory = chathistory[0].messages.map(chat=>{return {role:chat.role,content:chat.content }});
   
-  // 3. query the file by id
+ // 3. query the file by id
 
   const myFile = await chatmodel.findById(id).find({}).select("documentId -_id");
   
@@ -45,7 +45,7 @@ exports.handler = async (req, res) => {
   }
 
 
-  // 4. get embeddings for the query
+  //4. get embeddings for the query
   const questionEmb = await getEmbeddings(query);
 
 
@@ -82,7 +82,9 @@ exports.handler = async (req, res) => {
 
   // build a similar search function
 const file = await chatmodel.findById(id);
+
 const thedocument = await Doc.findById(file.documentId);
+
 const similarityResults = [] ;
 for(let i=0; i<thedocument.Chunks.length; i++){
   const chunk = thedocument.Chunks[i];
@@ -100,8 +102,8 @@ contextsTopSimilartyChunks = contextsTopSimilartyChunks.map(chunk=>chunk.rawText
 
 
 
-  // 9. build the prompt
-// TODO : TAKE THE LANGUAGE FROM THE USER (req.body.language) 
+  //9. build the prompt
+//TODO : TAKE THE LANGUAGE FROM THE USER (req.body.language) 
  const languageResponse = 'English'; // defula output language is english
   const promptStart = `Answer the question based on the context below with ${languageResponse}:\n\n`;
   const promptEnd = `\n\nQuestion: ${query} \n\nAnswer:`;

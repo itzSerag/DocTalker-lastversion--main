@@ -4,6 +4,7 @@ const passport = require('passport');
 const {connectDB} = require('../config/database');
 const morgan = require('morgan');
 require('dotenv').config();
+const { auth } = require('../middlewares/auth');
 
 
 const PORT = process.env.PORT || 3000; 
@@ -31,8 +32,9 @@ const paymentRoutes = require('../routes/payment');
 const uploadRoute = require('../routes/upload');
 const queryRoute = require('../routes/query');
 const userRoutes = require('../routes/userRoute')
+const chatRoutes = require('../routes/chatRoute');
 
-// Home route
+// Home auth
 app.get('/', (req, res) => {
     try{
     res.status(200).json({ status: "success" });
@@ -45,7 +47,8 @@ app.get('/', (req, res) => {
 app.use('/payment', paymentRoutes) ;
 app.use('/upload', uploadRoute);
 app.use('/query', queryRoute);
-app.use("/user",userRoutes);  
+app.use("/user",userRoutes);
+app.use("/chat",chatRoutes);    
 
 
 // start the DB connection before starting the app

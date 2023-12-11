@@ -5,8 +5,8 @@ const { auth } = require('../middlewares/auth');
 
 router.post("/signup", createUser);
 router.post("/login", login);
-router.delete("/:id",auth,deleteUser);
-router.put("/:id",auth,updateUser);
+router.delete("/:id",deleteUser);
+router.put("/:id",updateUser);
 
 
 // TODO GOOGLE AUTH
