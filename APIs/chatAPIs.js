@@ -1,9 +1,10 @@
-const { connectDB} = require('../config/database');
 const userModel = require('../models/user');
 const chatCollectionModel = require('../models/chatcollection');
 const chatModel = require('../models/Chat');
 const Doc = require('../models/document');
 let idname = [];
+
+
 exports.getAllChats = async (req, res) => {
     try {
         const {id} = req.user.id;//User ID
@@ -77,6 +78,7 @@ exports.updateChat = async (req, res) => {
        const {id} = req.params;
        const {chatName} = req.body;
        const updated = await chatModel.findByIdAndUpdate({_id:id}, {$set:{chatName:chatName}},{new:true})
+
     return res.json({message: "Chat Name Updated Successfully"});
    } catch (error) {
     return res.status(500).json({error:error.message})

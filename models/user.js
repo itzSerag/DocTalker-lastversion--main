@@ -25,29 +25,40 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // googleId: {
-    //     type: String,
-    //     unique: true,  // idk if this is needed -- google already gives unique IDs
-    //     default: null
-    // },
+    googleId: {
+        type: String,
+        unique: true,  // idk if this is needed -- google already gives unique IDs
+        default: null
+    },
     subscription: {
         type: String,
         enum: ['free', 'gold', 'premium'],
         default: 'free',
     },
-    // stripeCustomerId: {
-    //     type: String,
-    //     unique: true,
-    // },
+    stripeCustomerId: {
+        type: String,
+        unique: true,
+    },
+    // check if the user already made the OTP or not 
     isVerified: {
         type : Boolean,
         default : false 
     },
     
-    collectionChatIds:{
+    // array of chat ids that the user is in
+
+    chats:[{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'chatcollection'
-    }
+        ref:'Chat'
+    }],
+    uploadRequest: {
+        type: Number,
+        default: 0,
+    },
+    maxUploadRequest: {
+        type: Number,
+        default: 2, // Default value for free subscription
+    },
     },
  {
     timestamps: true

@@ -1,15 +1,11 @@
-const pdfParse = require('pdf-parse');
 const DocumentModel = require('../models/document');
 const chatmodel = require('../models/Chat');
 const { connectDB } = require('../config/database');
 const {convertDocToChunks} = require('../utils/extractDataFromDocs');
 const { getEmbeddings } = require('../services/huggingface');
-const mammoth = require("mammoth"); // For handling .docx files
+const Chat = require('../models/Chat');
+const User = require('../models/user');
 
-
-
-// pinecone config
-// TODO : ADD THE PINECONE CONFIG TO CONFIGs/PINECONE.JS
 
 
 
@@ -24,10 +20,13 @@ exports.handler = async (req, res) => {
     await connectDB();
 
     // 3. query the file by id
+
     // TODO : PASS THE CHAT ID 
     const { id } = req.body;
     const chat = await chatmodel.findById(id);
     const myFile = await DocumentModel.findById(chat.documentId);
+    const currUser = req.user;
+
     
     if (!myFile) {
       return res.status(400).json({ message: 'file not found' });
@@ -41,7 +40,6 @@ exports.handler = async (req, res) => {
 
 
     // Chunk the text using RecursiveCharacterTextSplitter
-
     const chunks = await convertDocToChunks(myFile.FileName, myFile.FileUrl);
     
 
@@ -105,7 +103,22 @@ exports.handler = async (req, res) => {
     myFile.isProcessed = true;
     await myFile.save();
 
-    // await disconnectDB()
+
+    // Create new Chat return chat id to the forntend -
+    // and add the chat id to the user chats array
+    const newChat = new Chat({
+      documentId: myFile._id,
+      chatName: myFile.FileName,
+      messages: [],
+    });
+
+    await newChat.save();
+
+    currUser.chats.push(newChat._id);
+    await currUser.save();
+
+
+    ///
 
     // 11. return the response
     return res.status(200).json({ message: 'File processed and uploaded to mongodb successfully' });

@@ -7,7 +7,6 @@ exports.createPaymentIntent = async (req, res) => {
     const amount = req.body.amount;
     const currency = req.body.currency;
     const userId = req.body.userId;
-
     const user = await User.findById(userId);
 
     if (!user) {

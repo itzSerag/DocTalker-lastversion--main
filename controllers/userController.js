@@ -1,7 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/generateToken");
-const coll = require("../models/chatcollection");
 
 
 //Signup

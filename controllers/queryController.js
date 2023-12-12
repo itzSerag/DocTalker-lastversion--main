@@ -85,12 +85,16 @@ const file = await chatmodel.findById(id);
 
 const thedocument = await Doc.findById(file.documentId);
 
+
+
 const similarityResults = [] ;
 for(let i=0; i<thedocument.Chunks.length; i++){
   const chunk = thedocument.Chunks[i];
   const similarity = cosineSimilarity(questionEmb,chunk.embeddings);
   similarityResults.push({ chunk, similarity });
 }
+
+
 //sort to get the highest three chunks similarity 
 similarityResults.sort((a, b) => b.similarity - a.similarity);
 //get these three chunks from the array

@@ -12,4 +12,7 @@ exports.auth = async(req, res, next) => {
     } catch (error) {
         res.status(401).json({message: 'Unauthorized'})
     }
+
+    // DO NOT EVER FORGET THE NEXT() FUNCTION -- infinte loop
+    next() ;
 }
