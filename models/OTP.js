@@ -12,7 +12,7 @@ const otpSchema = new mongoose.Schema({
     otpExpiresIn: {
         type: Date,
         required: true
-    }
+    },
 }, {
     timestamps: true
 });

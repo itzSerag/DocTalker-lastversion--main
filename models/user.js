@@ -57,7 +57,15 @@ const userSchema = new mongoose.Schema({
     },
     maxUploadRequest: {
         type: Number,
-        default: 2, // Default value for free subscription
+        default: 2, // Default value for free subscription -- change if the user has a different subscription
+    },
+    queryRequest: {
+        type: Number,
+        default: 0,
+    },
+    queryMax: {
+        type: Number,
+        default: 5,  // Default value for free subscription -- change if the user has a different subscription
     },
     },
  {
@@ -65,7 +73,30 @@ const userSchema = new mongoose.Schema({
  }
 );
 
+// RESET UPLOAD REQUEST AFTER 24 HOURS  -- 11:59 PM LOCAL TIME
 
+
+// Function to reset the numbers
+userSchema.methods.resetNumbers = function () {
+    this.queryRequest = 0;
+    this.uploadRequest = 0; // Reset uploadRequest
+};
+
+// Middleware to automatically reset numbers before saving
+userSchema.pre('save', async function (next) {
+    const now = new Date();
+    
+    // Calculate 11:59 pm in the user's local time
+    const resetTime = new Date(now);
+    resetTime.setHours(23, 59, 0, 0);
+
+    // Check if it's past 11:59 pm in the user's local time
+    if (now > resetTime) {
+        this.resetNumbers();
+    }
+
+    next();
+});
 
 module.exports = mongoose.model('User', userSchema);
 
